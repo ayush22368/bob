@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Generate Default PWA Icons</title>
+</head>
+<body>
+    <h1>Generating Default PWA Icons...</h1>
+    <div id="canvases"></div>
+    
+    <script>
+        const sizes = [72, 96, 128, 144, 152, 192, 384, 512];
+        const canvasContainer = document.getElementById('canvases');
+        
+        sizes.forEach(size => {
+            // Create canvas
+            const canvas = document.createElement('canvas');
+            canvas.width = size;
+            canvas.height = size;
+            
+            const ctx = canvas.getContext('2d');
+            
+            // Create gradient background
+            const gradient = ctx.createLinearGradient(0, 0, size, size);
+            gradient.addColorStop(0, '#ec4899'); // Pink theme color
+            gradient.addColorStop(1, '#f472b6');
+            
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, size, size);
+            
+            // Add text
+            ctx.fillStyle = 'white';
+            ctx.font = `bold ${Math.floor(size/6)}px Arial`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('SS', size/2, size/2);
+            
+            // Add to page for visual reference
+            canvas.style.margin = '10px';
+            canvas.style.border = '1px solid #ccc';
+            canvasContainer.appendChild(canvas);
+            
+            // Convert to blob and download
+            canvas.toBlob(blob => {
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `icon-${size}x${size}.png`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            }, 'image/png');
+        });
+        
+        setTimeout(() => {
+            document.body.innerHTML += '<h2>All icons generated! Check your downloads folder.</h2>';
+        }, 2000);
+    </script>
+</body>
+</html>

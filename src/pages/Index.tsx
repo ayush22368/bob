@@ -1,14 +1,15 @@
 
 import { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { Heart, User, Clock, MapPin, LogOut, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { MapPin, Clock, User, Heart, LogOut } from 'lucide-react';
-import { Link, useNavigate } from 'react-router-dom';
+import { toast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from '@/hooks/use-toast';
 import PWATestButton from '@/components/PWATestButton';
+import { usePWA } from '@/hooks/usePWA';
 
 interface Companion {
   id: string;
