@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Generate PWA Icons</title>
+</head>
+<body>
+    <canvas id="canvas" style="display: none;"></canvas>
+    <div id="status">Generating icons...</div>
+
+    <script>
+        const sizes = [16, 32, 72, 96, 128, 144, 152, 192, 384, 512];
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+
+        function generateIcon(size) {
+            canvas.width = size;
+            canvas.height = size;
+            
+            // Create gradient background
+            const gradient = ctx.createLinearGradient(0, 0, size, size);
+            gradient.addColorStop(0, '#ec4899');
+            gradient.addColorStop(1, '#be185d');
+            
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, size, size);
+            
+            // Add rounded corners
+            ctx.globalCompositeOperation = 'destination-in';
+            ctx.beginPath();
+            ctx.roundRect(0, 0, size, size, size * 0.15);
+            ctx.fill();
+            ctx.globalCompositeOperation = 'source-over';
+            
+            // Add sakura emoji
+            ctx.font = `${size * 0.5}px serif`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillStyle = 'white';
+            ctx.fillText('🌸', size / 2, size / 2);
+            
+            // Convert to blob and download
+            canvas.toBlob((blob) => {
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `icon-${size}x${size}.png`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            });
+        }
+
+        // Generate all icon sizes
+        let index = 0;
+        const generateNext = () => {
+            if (index < sizes.length) {
+                generateIcon(sizes[index]);
+                document.getElementById('status').textContent = `Generated ${sizes[index]}x${sizes[index]}... (${index + 1}/${sizes.length})`;
+                index++;
+                setTimeout(generateNext, 500);
+            } else {
+                document.getElementById('status').textContent = 'All icons generated! Check your downloads folder.';
+            }
+        };
+
+        // Add roundRect polyfill for older browsers
+        if (!CanvasRenderingContext2D.prototype.roundRect) {
+            CanvasRenderingContext2D.prototype.roundRect = function(x, y, w, h, r) {
+                this.beginPath();
+                this.moveTo(x + r, y);
+                this.arcTo(x + w, y, x + w, y + h, r);
+                this.arcTo(x + w, y + h, x, y + h, r);
+                this.arcTo(x, y + h, x, y, r);
+                this.arcTo(x, y, x + w, y, r);
+                this.closePath();
+            };
+        }
+
+        generateNext();
+    </script>
+</body>
+</html>
